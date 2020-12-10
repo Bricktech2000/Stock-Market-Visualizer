@@ -6,10 +6,22 @@ import matplotlib.pyplot as plt
 #https://pypi.org/project/yfinance/
 import yfinance as yf
 
+###   CONSTANTS   ###
+ticker = 'AAPL'
+maxMarkerOpacity = 1
+dataPeriod = '30d'
+dataInterval = '5m'
+backgroundColor = 'black'
+markerShape = 's'
+markerColor = (0, 1, 1)
+markerSize = 100
 
+
+
+###     CODE     ###
 def getFromTicker(ticker):
     ticker = yf.Ticker(ticker)
-    data = ticker.history(period='30d', interval='5m')
+    data = ticker.history(period=dataPeriod, interval=dataInterval)
     #Open, High, Low, Close, Volume, Dividends, Stock Splits
     return data
 
@@ -32,18 +44,23 @@ def compile(data):
 def visualize(points):
     #https://stackoverflow.com/questions/14088687/how-to-change-plot-background-color/23907866
     fig = plt.figure()
-    fig.patch.set_facecolor('black')
+    fig.patch.set_facecolor(backgroundColor)
     #https://stackoverflow.com/questions/9295026/matplotlib-plots-removing-axis-legends-and-white-spaces
     plt.axis('off')
     #https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/marker_reference.html
     #https://stackoverflow.com/questions/21519203/plotting-a-list-of-x-y-coordinates-in-python-matplotlib
     #https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.scatter.html
-    plt.scatter([point[0] for point in points], [point[1] for point in points], marker='s', c=[(0, 1, 1, point[2] * 1) for point in points], s=100)
+    plt.scatter(
+        [point[0] for point in points],
+        [point[1] for point in points],
+        marker=markerShape,
+        c=[(markerColor[0], markerColor[1], markerColor[2], point[2] * maxMarkerOpacity) for point in points],
+        s=markerSize
+    )
     plt.show()
 
 
-data = getFromTicker('AAPL')
-print(data)
+data = getFromTicker(ticker)
 points = compile(data)
 visualize(points)
 
