@@ -44,11 +44,12 @@ data = [
 
 def visualize(points):
     #https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/marker_reference.html
-    plt.plot(0, 0, marker='s')
+    #https://stackoverflow.com/questions/21519203/plotting-a-list-of-x-y-coordinates-in-python-matplotlib
+    plt.scatter([point[0] for point in points], [point[1] for point in points], marker='s')
     plt.show()
 
 def compile(data):
-    pass
+    return data
 
 points = compile(data)
 visualize(points)
