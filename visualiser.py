@@ -5,6 +5,7 @@
 import matplotlib.pyplot as plt
 #https://pypi.org/project/yfinance/
 import yfinance as yf
+import time
 
 ###   CONSTANTS   ###
 ticker = 'AAPL'
@@ -54,45 +55,91 @@ def compile(data):
             points.append(point)
     return points, lines
 
+#https://stackoverflow.com/questions/14088687/how-to-change-plot-background-color/23907866
+fig = plt.figure()
+fig.patch.set_facecolor(backgroundColor)
+oldItems = []
 def visualize(points, lines):
-    #https://stackoverflow.com/questions/14088687/how-to-change-plot-background-color/23907866
-    fig = plt.figure()
-    fig.patch.set_facecolor(backgroundColor)
+    #plt.cla()
+    global oldItems
+    for item in oldItems:
+        item.remove()
+    oldItems = []
     #https://stackoverflow.com/questions/9295026/matplotlib-plots-removing-axis-legends-and-white-spaces
     plt.axis('off')
     #https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/marker_reference.html
     #https://stackoverflow.com/questions/21519203/plotting-a-list-of-x-y-coordinates-in-python-matplotlib
     #https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.scatter.html
-    plt.scatter(
+    oldItems.append(plt.scatter(
         [point[0] for point in points],
         [point[1] for point in points],
         marker=markerStyle,
         c=[(markerColor[0], markerColor[1], markerColor[2], point[2] * maxMarkerOpacity) for point in points],
         s=markerSize
-    )
+    ))
     #https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.vlines.html
     #https://stackoverflow.com/questions/24988448/how-to-draw-vertical-lines-on-a-given-plot-in-matplotlib
     for i in range(len(lines)):
         if(lines[i]):
-            plt.axvline(
+            oldItems.append(plt.axvline(
                 x=i,
                 color=(lineColor[0], lineColor[0], lineColor[1], lineOpacity),
                 linestyle=lineStyle
-            )
+            ))
     for i in range(percentageLineDivisions):
         y = i / percentageLineDivisions * max([point[1] for point in points]) * percentageLineOverflow
         if(y > min([point[1] for point in points]) / percentageLineOverflow):
-            plt.axhline(
+            oldItems.append(plt.axhline(
                 y=y,
                 color=(lineColor[0], lineColor[0], lineColor[1], lineOpacity),
                 linestyle=lineStyle
-            )
-    plt.show()
+            ))
+    return plt
+
+updating = False
+def show(plt, points, lines):
+    def zoomChanged(evt):
+        global updating
+        if updating: return
+
+        global maxMarkerOpacity
+        updating = True
+        xlim = evt.get_xlim()
+        ylim = evt.get_ylim()
+        zoom = 0
+        zoom += len(lines) / (xlim[1] - xlim[0])
+        zoom += (max([point[1] for point in points]) * percentageLineOverflow - min([point[1] for point in points]) / percentageLineOverflow) / (ylim[1] - ylim[0])
+        zoom /= 2
+        if zoom < 1: zoom = 1
+        _maxMarkerOpacity = maxMarkerOpacity
+        maxMarkerOpacity = zoom / 10 * _maxMarkerOpacity
+        visualize(points, lines)
+        print('update', maxMarkerOpacity)
+        maxMarkerOpacity = _maxMarkerOpacity
+        updating = False
+
+    def connectCallbacks():
+        #https://stackoverflow.com/questions/31490436/matplotlib-finding-out-xlim-and-ylim-after-zoom
+        #https://stackoverflow.com/questions/15067668/how-to-get-a-matplotlib-axes-instance-to-plot-to
+        #ax = plt.gca()
+        #ax.callbacks.connect('xlim_changed', zoomChanged)
+        #ax.callbacks.connect('ylim_changed', zoomChanged)
+        pass
+    
+    connectCallbacks()
+    
+    while True:
+        #https://www.xspdf.com/resolution/53303696.html
+        ax = plt.gca()
+        zoomChanged(ax)
+        plt.pause(.05)
+        time.sleep(1 / 60)
 
 
 data = getFromTicker(ticker)
 points, lines = compile(data)
-visualize(points, lines)
+plt = visualize(points, lines)
+show(plt, points, lines)
 
 
 
