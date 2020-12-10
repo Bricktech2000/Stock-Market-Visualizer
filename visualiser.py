@@ -117,16 +117,6 @@ def show(plt, points, lines):
         print('update', maxMarkerOpacity)
         maxMarkerOpacity = _maxMarkerOpacity
         updating = False
-
-    def connectCallbacks():
-        #https://stackoverflow.com/questions/31490436/matplotlib-finding-out-xlim-and-ylim-after-zoom
-        #https://stackoverflow.com/questions/15067668/how-to-get-a-matplotlib-axes-instance-to-plot-to
-        #ax = plt.gca()
-        #ax.callbacks.connect('xlim_changed', zoomChanged)
-        #ax.callbacks.connect('ylim_changed', zoomChanged)
-        pass
-    
-    connectCallbacks()
     
     while True:
         #https://www.xspdf.com/resolution/53303696.html
