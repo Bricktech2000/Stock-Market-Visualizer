@@ -66,9 +66,15 @@ def compile(data):
     return out
 
 def visualize(points):
+    #https://stackoverflow.com/questions/14088687/how-to-change-plot-background-color/23907866
+    fig = plt.figure()
+    fig.patch.set_facecolor('black')
+    #https://stackoverflow.com/questions/9295026/matplotlib-plots-removing-axis-legends-and-white-spaces
+    plt.axis('off')
     #https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/marker_reference.html
     #https://stackoverflow.com/questions/21519203/plotting-a-list-of-x-y-coordinates-in-python-matplotlib
-    plt.scatter([point[0] for point in points], [point[1] for point in points], marker='s')
+    #https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.scatter.html
+    plt.scatter([point[0] for point in points], [point[1] for point in points], marker='s', c=[(0, 1, 1, .05)] * len(points), s=100)
     plt.show()
 
 
