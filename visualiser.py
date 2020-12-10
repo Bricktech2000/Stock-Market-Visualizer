@@ -16,6 +16,7 @@ markerStyle = 'o'
 markerSize = 100
 markerColor = (0.0, 0.5, 1.0)
 maxMarkerOpacity = 1.0
+maxZoom = 3
 lineColor = (0.0, 0.5, 1.0)
 lineOpacity = 0.5
 lineStyle = 'solid'
@@ -58,11 +59,16 @@ def compile(data):
 #https://stackoverflow.com/questions/14088687/how-to-change-plot-background-color/23907866
 fig = plt.figure()
 fig.patch.set_facecolor(backgroundColor)
+#https://stackoverflow.com/questions/10133478/how-to-programmatically-select-pan-zoom-in-pyqt-matplotlib-navigation
+plt.get_current_fig_manager().toolbar.pan()
+#https://github.com/matplotlib/mplfinance/issues/85
+plt.get_current_fig_manager().window.state('zoomed')
 oldItems = []
 def visualize(points, lines):
-    #plt.cla()
+    global fig
     global oldItems
     for item in oldItems:
+        #http://matplotlib.1069221.n5.nabble.com/Removing-Markers-from-Figure-td8167.html
         item.remove()
     oldItems = []
     #https://stackoverflow.com/questions/9295026/matplotlib-plots-removing-axis-legends-and-white-spaces
@@ -94,6 +100,7 @@ def visualize(points, lines):
                 color=(lineColor[0], lineColor[0], lineColor[1], lineOpacity),
                 linestyle=lineStyle
             ))
+    fig.tight_layout()
     return plt
 
 updating = False
@@ -112,7 +119,8 @@ def show(plt, points, lines):
         zoom /= 2
         if zoom < 1: zoom = 1
         _maxMarkerOpacity = maxMarkerOpacity
-        maxMarkerOpacity = zoom / 10 * _maxMarkerOpacity
+        maxMarkerOpacity = zoom / maxZoom * _maxMarkerOpacity
+        if maxMarkerOpacity > 1: maxMarkerOpacity = 1
         visualize(points, lines)
         print('update', maxMarkerOpacity)
         maxMarkerOpacity = _maxMarkerOpacity
@@ -123,7 +131,6 @@ def show(plt, points, lines):
         ax = plt.gca()
         zoomChanged(ax)
         plt.pause(.05)
-        time.sleep(1 / 60)
 
 
 data = getFromTicker(ticker)
