@@ -46,7 +46,7 @@ data = [
 
 def getFromTicker(ticker):
     ticker = yf.Ticker(ticker)
-    data = ticker.history(period='1d', interval='1m')
+    data = ticker.history(period='30d', interval='5m')
     #Open, High, Low, Close, Volume, Dividends, Stock Splits
     return data
 
@@ -54,10 +54,11 @@ def getFromTicker(ticker):
 def compile(data):
     data2 = []
     for i in range(0, len(data)):
-        data2.append([i, data['Open'][i]])
-        data2.append([i, data['High'][i]])
-        data2.append([i, data['Low'][i]])
-        data2.append([i, data['Close'][i]])
+        vol = data['Volume'][i] / max(data['Volume'])
+        data2.append([i, data['Open'][i],  vol])
+        data2.append([i, data['High'][i],  vol])
+        data2.append([i, data['Low'][i],   vol])
+        data2.append([i, data['Close'][i], vol])
     out = []
     while len(data2) > 0:
         item = data2.pop(0)
@@ -74,7 +75,7 @@ def visualize(points):
     #https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/marker_reference.html
     #https://stackoverflow.com/questions/21519203/plotting-a-list-of-x-y-coordinates-in-python-matplotlib
     #https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.scatter.html
-    plt.scatter([point[0] for point in points], [point[1] for point in points], marker='s', c=[(0, 1, 1, .05)] * len(points), s=100)
+    plt.scatter([point[0] for point in points], [point[1] for point in points], marker='s', c=[(0, 1, 1, point[2] * 1) for point in points], s=100)
     plt.show()
 
 
