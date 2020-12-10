@@ -11,12 +11,15 @@ ticker = 'AAPL'
 dataPeriod = '10d'
 dataInterval = '5m'
 backgroundColor = 'black'
-markerShape = 'o'
+markerStyle = 'o'
 markerSize = 100
 markerColor = (0.0, 0.5, 1.0)
 maxMarkerOpacity = 1.0
-dayLineColor = (0.0, 0.5, 1.0)
-dayLineOpacity = 0.5
+lineColor = (0.0, 0.5, 1.0)
+lineOpacity = 0.5
+lineStyle = 'solid'
+percentageLineDivisions = 100
+percentageLineOverflow = 1.05
 
 
 
@@ -63,7 +66,7 @@ def visualize(points, lines):
     plt.scatter(
         [point[0] for point in points],
         [point[1] for point in points],
-        marker=markerShape,
+        marker=markerStyle,
         c=[(markerColor[0], markerColor[1], markerColor[2], point[2] * maxMarkerOpacity) for point in points],
         s=markerSize
     )
@@ -73,16 +76,16 @@ def visualize(points, lines):
         if(lines[i]):
             plt.axvline(
                 x=i,
-                color=(dayLineColor[0],dayLineColor[0], dayLineColor[1], dayLineOpacity),
-                linestyle='solid'
+                color=(lineColor[0], lineColor[0], lineColor[1], lineOpacity),
+                linestyle=lineStyle
             )
-    for i in range(100):
-        y = i / 100 * max([point[1] for point in points]) * 1.05
-        if(y > min([point[1] for point in points]) / 1.05):
+    for i in range(percentageLineDivisions):
+        y = i / percentageLineDivisions * max([point[1] for point in points]) * percentageLineOverflow
+        if(y > min([point[1] for point in points]) / percentageLineOverflow):
             plt.axhline(
                 y=y,
-                color=(dayLineColor[0],dayLineColor[0], dayLineColor[1], dayLineOpacity),
-                linestyle='solid'
+                color=(lineColor[0], lineColor[0], lineColor[1], lineOpacity),
+                linestyle=lineStyle
             )
     plt.show()
 
