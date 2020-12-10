@@ -8,13 +8,13 @@ import yfinance as yf
 
 ###   CONSTANTS   ###
 ticker = 'AAPL'
-maxMarkerOpacity = 1
 dataPeriod = '30d'
 dataInterval = '5m'
 backgroundColor = 'black'
-markerShape = 's'
-markerColor = (0, 1, 1)
+markerShape = 'o'
 markerSize = 100
+markerColor = (0.0, 0.5, 1.0)
+maxMarkerOpacity = 1.0
 
 
 
