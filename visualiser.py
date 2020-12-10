@@ -69,20 +69,21 @@ def visualize(points, lines):
     )
     #https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.vlines.html
     #https://stackoverflow.com/questions/24988448/how-to-draw-vertical-lines-on-a-given-plot-in-matplotlib
-    plt.vlines(
-        [i * line for line, i in enumerate(lines)],
-        min([point[1] for point in points]),
-        max([point[1] for point in points]),
-        colors=(dayLineColor[0],dayLineColor[0], dayLineColor[1], dayLineOpacity),
-        linestyles='solid'
-    )
-    plt.hlines(
-        [(val := i / 100 * max([point[1] for point in points])) * (val > min([point[1] for point in points])) for i in range(0, 100)],
-        0,
-        len(lines),
-        colors=(dayLineColor[0],dayLineColor[0], dayLineColor[1], dayLineOpacity),
-        linestyles='solid'
-    )
+    for i in range(len(lines)):
+        if(lines[i]):
+            plt.axvline(
+                x=i,
+                color=(dayLineColor[0],dayLineColor[0], dayLineColor[1], dayLineOpacity),
+                linestyle='solid'
+            )
+    for i in range(100):
+        y = i / 100 * max([point[1] for point in points]) * 1.05
+        if(y > min([point[1] for point in points]) / 1.05):
+            plt.axhline(
+                y=y,
+                color=(dayLineColor[0],dayLineColor[0], dayLineColor[1], dayLineOpacity),
+                linestyle='solid'
+            )
     plt.show()
 
 
