@@ -8,13 +8,15 @@ import yfinance as yf
 
 ###   CONSTANTS   ###
 ticker = 'AAPL'
-dataPeriod = '30d'
+dataPeriod = '10d'
 dataInterval = '5m'
 backgroundColor = 'black'
 markerShape = 'o'
 markerSize = 100
 markerColor = (0.0, 0.5, 1.0)
 maxMarkerOpacity = 1.0
+dayLineColor = (0.0, 0.5, 1.0)
+dayLineOpacity = 0.5
 
 
 
@@ -28,20 +30,28 @@ def getFromTicker(ticker):
 
 def compile(data):
     data2 = []
+    lines = []
+    lastDay = 0
     for i in range(0, len(data)):
         vol = data['Volume'][i] / max(data['Volume'])
         data2.append([i, data['Open'][i],  vol])
         data2.append([i, data['High'][i],  vol])
         data2.append([i, data['Low'][i],   vol])
         data2.append([i, data['Close'][i], vol])
-    out = []
+        #https://thispointer.com/python-pandas-how-to-get-column-and-row-names-in-dataframe/
+        #https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Timestamp.day.html
+        if lastDay != data.index[i].day: lines.append(1)
+        else: lines.append(0)
+        lastDay = data.index[i].day
+    lines.append(1)
+    points = []
     while len(data2) > 0:
-        item = data2.pop(0)
-        if not (item in data2):
-            out.append(item)
-    return out
+        point = data2.pop(0)
+        if not (point in data2):
+            points.append(point)
+    return points, lines
 
-def visualize(points):
+def visualize(points, lines):
     #https://stackoverflow.com/questions/14088687/how-to-change-plot-background-color/23907866
     fig = plt.figure()
     fig.patch.set_facecolor(backgroundColor)
@@ -57,12 +67,28 @@ def visualize(points):
         c=[(markerColor[0], markerColor[1], markerColor[2], point[2] * maxMarkerOpacity) for point in points],
         s=markerSize
     )
+    #https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.vlines.html
+    #https://stackoverflow.com/questions/24988448/how-to-draw-vertical-lines-on-a-given-plot-in-matplotlib
+    plt.vlines(
+        [i * line for line, i in enumerate(lines)],
+        min([point[1] for point in points]),
+        max([point[1] for point in points]),
+        colors=(dayLineColor[0],dayLineColor[0], dayLineColor[1], dayLineOpacity),
+        linestyles='solid'
+    )
+    plt.hlines(
+        [(val := i / 100 * max([point[1] for point in points])) * (val > min([point[1] for point in points])) for i in range(0, 100)],
+        0,
+        len(lines),
+        colors=(dayLineColor[0],dayLineColor[0], dayLineColor[1], dayLineOpacity),
+        linestyles='solid'
+    )
     plt.show()
 
 
 data = getFromTicker(ticker)
-points = compile(data)
-visualize(points)
+points, lines = compile(data)
+visualize(points, lines)
 
 
 
