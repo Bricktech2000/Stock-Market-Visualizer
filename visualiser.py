@@ -1,10 +1,10 @@
-#https://www.tutorialspoint.com/python/tk_canvas.htm
-import tkinter
-top = tkinter.Tk()
 
-c = tkinter.Canvas(top, bg='#000', height=500, width=500)
-c.pack()
-top.mainloop()
+#pip install matplotlib
+#https://stackoverflow.com/questions/64729944/runtimeerror-the-current-numpy-installation-fails-to-pass-a-sanity-check-due-to
+#pip install numpy==1.19.3
+import matplotlib.pyplot as plt
+
+
 
 data = [
     [1, 10.5],
@@ -43,7 +43,9 @@ data = [
 ]
 
 def visualize(points):
-    pass
+    #https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/marker_reference.html
+    plt.plot(0, 0, marker='s')
+    plt.show()
 
 def compile(data):
     pass
