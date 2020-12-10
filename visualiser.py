@@ -21,7 +21,7 @@ lineColor = (0.0, 0.5, 1.0)
 lineOpacity = 0.25
 lineStyle = 'solid'
 percentageLineDivisions = 100
-percentageLineOverflow = 1.05
+percentageLineOverflow = 1.10
 
 
 
@@ -45,7 +45,7 @@ def compile(data):
         data2.append([i, data['Close'][i], vol])
         #https://thispointer.com/python-pandas-how-to-get-column-and-row-names-in-dataframe/
         #https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Timestamp.day.html
-        if lastDay != data.index[i].day: lines.append(1)
+        if lastDay != data.index[i].day: lines.append(1 + (data.index[i].dayofweek == 0))
         else: lines.append(0)
         lastDay = data.index[i].day
     lines.append(1)
@@ -89,15 +89,15 @@ def visualize(points, lines):
         if(lines[i]):
             oldItems.append(plt.axvline(
                 x=i,
-                color=(lineColor[0], lineColor[0], lineColor[1], lineOpacity),
+                color=(lineColor[0], lineColor[0], lineColor[1], lineOpacity * lines[i]),
                 linestyle=lineStyle
             ))
-    for i in range(percentageLineDivisions):
-        y = i / percentageLineDivisions * max([point[1] for point in points]) * percentageLineOverflow
+    for i in range(int(percentageLineDivisions * percentageLineOverflow + 1)):
+        y = i / percentageLineDivisions * max([point[1] for point in points])
         if(y > min([point[1] for point in points]) / percentageLineOverflow):
             oldItems.append(plt.axhline(
                 y=y,
-                color=(lineColor[0], lineColor[0], lineColor[1], lineOpacity),
+                color=(lineColor[0], lineColor[0], lineColor[1], lineOpacity * (1 + (i % 10 == 0))),
                 linestyle=lineStyle
             ))
     fig.tight_layout()
