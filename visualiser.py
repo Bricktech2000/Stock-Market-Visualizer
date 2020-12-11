@@ -80,7 +80,7 @@ def visualize(points, lines):
         [point[0] for point in points],
         [point[1] for point in points],
         marker=markerStyle,
-        c=[(markerColor[0], markerColor[1], markerColor[2], point[2] * maxMarkerOpacity) for point in points],
+        c=[(markerColor[0], markerColor[1], markerColor[2], min(point[2] * maxMarkerOpacity, 1)) for point in points],
         s=markerSize
     ))
     #https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.vlines.html
@@ -120,7 +120,6 @@ def show(plt, points, lines):
         if zoom < 1: zoom = 1
         _maxMarkerOpacity = maxMarkerOpacity
         maxMarkerOpacity = zoom / maxZoom * _maxMarkerOpacity
-        if maxMarkerOpacity > 1: maxMarkerOpacity = 1
         visualize(points, lines)
         print('update', maxMarkerOpacity)
         maxMarkerOpacity = _maxMarkerOpacity
