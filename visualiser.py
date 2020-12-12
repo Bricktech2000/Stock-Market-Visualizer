@@ -5,7 +5,6 @@
 import matplotlib.pyplot as plt
 #https://pypi.org/project/yfinance/
 import yfinance as yf
-import time
 
 ###   CONSTANTS   ###
 ticker = 'AAPL'
