@@ -135,25 +135,3 @@ data = getFromTicker(ticker)
 points, lines = compile(data)
 plt = visualize(points, lines)
 show(plt, points, lines)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
