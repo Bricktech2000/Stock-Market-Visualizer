@@ -6,10 +6,13 @@ import matplotlib.pyplot as plt
 #https://pypi.org/project/yfinance/
 import yfinance as yf
 
+import threading
+import time
+
 ###   CONSTANTS   ###
 ticker = 'AAPL'
-dataPeriod = '10d'
-dataInterval = '5m'
+dataPeriod = '3d'
+dataInterval = '1m'
 backgroundColor = 'black'
 markerStyle = 'o'
 markerSize = 100
@@ -120,18 +123,41 @@ def show(plt, points, lines):
         _maxMarkerOpacity = maxMarkerOpacity
         maxMarkerOpacity = zoom / maxZoom * _maxMarkerOpacity
         visualize(points, lines)
-        print('update', maxMarkerOpacity)
         maxMarkerOpacity = _maxMarkerOpacity
         updating = False
-    
-    while True:
-        #https://www.xspdf.com/resolution/53303696.html
-        ax = plt.gca()
-        zoomChanged(ax)
-        plt.pause(.05)
+
+    #https://www.xspdf.com/resolution/53303696.html
+    ax = plt.gca()
+    zoomChanged(ax)
+    plt.pause(.05)
 
 
 data = getFromTicker(ticker)
-points, lines = compile(data)
-plt = visualize(points, lines)
-show(plt, points, lines)
+dataUpdated = True
+def fetchLoop():
+    global data, dataUpdated
+    while True:
+        print('fetch')
+        oldData = data
+        data = getFromTicker(ticker)
+        if data.shape != oldData.shape:
+            dataUpdated = True
+        time.sleep(0.01)
+
+def updateLoop():
+    global data, dataUpdated
+    points, lines = [], []
+    while True:
+        if len(data) > 0:
+            if dataUpdated:
+                dataUpdated = False
+                points, lines = compile(data)
+                visualize(points, lines)
+            if len(points) > 0:
+                show(plt, points, lines)
+        time.sleep(0.05)
+
+thr = threading.Thread(target=fetchLoop, args=(), daemon=True)
+thr.start()
+#https://stackoverflow.com/questions/14694408/runtimeerror-main-thread-is-not-in-main-loop
+updateLoop()
